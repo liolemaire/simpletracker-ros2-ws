@@ -43,6 +43,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ConfigEntryArray.srv"
   "srv/Mask.srv"
   "srv/MaskUpdate.srv"
+  "srv/PredictCoordinates.srv"
   DEPENDENCIES std_msgs sensor_msgs vision_msgs geometry_msgs
 )
 
