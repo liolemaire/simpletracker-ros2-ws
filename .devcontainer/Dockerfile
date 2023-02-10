@@ -5,12 +5,13 @@ FROM sky360/ros2-humble-dev:1.0.2
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-   && apt-get -y install --no-install-recommends python3-numpy libboost-python-dev \
+   && apt-get -y install --no-install-recommends vim python3-numpy libboost-python-dev \
    # ROS2 build related stuff
    && pip3 install setuptools==58.2.0 \
    && export PYTHONWARNINGS=ignore:::setuptools.command.install \
    && apt-get autoremove -y \
-   && apt-get clean -y
+   && apt-get clean -y \
+   && pip install tensorflow
    #&& rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=dialog

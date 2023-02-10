@@ -25,8 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'kinematics_service = simple_tracker_kinematics.kinematics_service:main',
-            'kinematics_client = simple_tracker_kinematics.kinematics_client:main',
+            'kinematics_node = simple_tracker_kinematics.kinematics_node:main',
         ],
     },
 )

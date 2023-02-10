@@ -24,7 +24,8 @@ from simple_tracker_interfaces.msg import TrackingState, TrackTrajectoryArray
 from simple_tracker_shared.control_loop_node import ConfiguredNode
 from simple_tracker_shared.qos_profiles import get_topic_publisher_qos_profile, get_topic_subscriber_qos_profile
 from simple_tracker_shared.utils import get_optimal_font_scale
- 
+from simple_tracker_interfaces.msg import PredictedTrackPoint
+
 class AnnotatedFrameProviderNode(ConfiguredNode):
 
   PROVISIONARY_TARGET = 1
@@ -42,16 +43,19 @@ class AnnotatedFrameProviderNode(ConfiguredNode):
     self.sub_tracker_detections = message_filters.Subscriber(self, Detection2DArray, 'sky360/tracker/detections')#, subscriber_qos_profile)
     self.sub_tracker_trajectory = message_filters.Subscriber(self, TrackTrajectoryArray, 'sky360/tracker/trajectory')#, subscriber_qos_profile)
     self.sub_tracker_prediction = message_filters.Subscriber(self, TrackTrajectoryArray, 'sky360/tracker/prediction')#, subscriber_qos_profile)
+    self.sub_tracker_predicted_coordinates = message_filters.Subscriber(self, PredictedTrackPoint, '/sky360/tracker/predicted_coordinates')#, subscriber_qos_profile)
 
     # setup the time synchronizer and register the subscriptions and callback
     self.time_synchronizer = message_filters.TimeSynchronizer([self.sub_masked_frame, self.sub_tracking_state, 
-    self.sub_tracker_detections, self.sub_tracker_trajectory, self.sub_tracker_prediction], 10)
+    self.sub_tracker_detections, self.sub_tracker_trajectory, self.sub_tracker_prediction,self.sub_tracker_predicted_coordinates], 10)
     self.time_synchronizer.registerCallback(self.synced_callback)
 
     self.get_logger().info(f'{self.get_name()} node is up and running.')
 
   def synced_callback(self, masked_frame:Image, msg_tracking_state:TrackingState, msg_detection_array:Detection2DArray, 
-    msg_trajectory_array:TrackTrajectoryArray, msg_prediction_array:TrackTrajectoryArray):
+    msg_trajectory_array:TrackTrajectoryArray, msg_prediction_array:TrackTrajectoryArray,
+    msg_predicted_coordinates:PredictedTrackPoint
+    ):
 
     if masked_frame is not None and msg_tracking_state is not None and msg_detection_array is not None and msg_trajectory_array is not None:
 
@@ -123,6 +127,13 @@ class AnnotatedFrameProviderNode(ConfiguredNode):
 
             previous_prediction_point = prediction_point
 
+      #draw a big red purple where the prediction is
+      radius = 20
+      color = (255, 0, 255)
+      center = (int(msg_predicted_coordinates.center.x),int(msg_predicted_coordinates.center.y))
+      cv2.circle(annotated_frame, center, radius, color, -1)
+      
+      
       frame_annotated_msg = self.br.cv2_to_imgmsg(annotated_frame, masked_frame.encoding)
       frame_annotated_msg.header = masked_frame.header
       self.pub_annotated_frame.publish(frame_annotated_msg)

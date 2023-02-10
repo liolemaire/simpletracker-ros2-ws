@@ -35,6 +35,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ConfigItem.msg"
   "msg/ObserverCloudEstimation.msg"
   "msg/TrackingState.msg"
+  "msg/PredictedTrackPoint.msg"
   "msg/TrackPoint.msg"
   "msg/TrackTrajectory.msg"  
   "msg/TrackTrajectoryArray.msg"
